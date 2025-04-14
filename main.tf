@@ -80,32 +80,6 @@ module "security_group__alb" {
   ]
 }
 
-module "security_group__backend" {
-  source = "./modules/security-group"
-
-  name = "${local.resource_prefix}-backend"
-  vpc_id = module.vpc.vpc_id
-  ingress_rules = [
-    {
-      port = var.backend_application_port
-      cidr_block = "0.0.0.0/0"
-    },
-    {
-      port = var.backend_application_port
-      source_security_group_id = module.security_group__alb.id
-    },
-    {
-      port = 22
-      cidr_block = "0.0.0.0/0"
-    }
-  ]
-
-  depends_on = [
-    module.vpc,
-    module.security_group__alb
-  ]
-}
-
 module "security_group__frontend" {
   source = "./modules/security-group"
 
@@ -126,9 +100,37 @@ module "security_group__frontend" {
     }
   ]
 
-  depends_on = [
+   depends_on = [
     module.vpc,
     module.security_group__alb
+  ]
+}
+
+module "security_group__backend" {
+  source = "./modules/security-group"
+
+  name = "${local.resource_prefix}-backend"
+  vpc_id = module.vpc.vpc_id
+  ingress_rules = [
+    {
+      port = var.backend_application_port
+      # cidr_block = "0.0.0.0/0"
+      source_security_group_id = module.security_group__frontend.id
+    },
+    {
+      port = var.backend_application_port
+      source_security_group_id = module.security_group__alb.id
+    },
+    {
+      port = 22
+      cidr_block = "0.0.0.0/0"
+    }
+  ]
+
+  depends_on = [
+    module.vpc,
+    module.security_group__alb,
+    module.security_group__frontend
   ]
 }
 

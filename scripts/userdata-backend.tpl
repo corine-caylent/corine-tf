@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sudo yum update -y
-curl -sL https://rpm.nodesource.com/setup_18.x | sudo bash -
+curl -sL https://rpm.nodesource.com/setup_22.x | sudo bash -
 sudo yum install -y nodejs git
 
 # App setup
